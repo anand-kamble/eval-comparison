@@ -9,7 +9,8 @@ import pandas as pd
 import json
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
 from llama_index.core.settings import Settings
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+# from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.llms.ollama import Ollama
 from trulens_eval import Feedback, Tru, TruLlama
 from trulens_eval.app import App
@@ -17,7 +18,8 @@ from trulens_eval.feedback.provider import LiteLLM
 
 # %%
 # Initialize the embedding model
-embeddings = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+# embeddings = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+embeddings = OllamaEmbedding(model_name="phi3:latest")
 Settings.embed_model = embeddings
 
 # Load documents and create a vector store index

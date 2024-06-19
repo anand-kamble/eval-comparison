@@ -12,6 +12,7 @@ import json
 from llama_index.core.settings import Settings
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.llms.ollama import Ollama
+# from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.embeddings.ollama import OllamaEmbedding
 from ragas.testset.evolutions import simple, reasoning, multi_context, conditional
 from llama_index.core import SimpleDirectoryReader
@@ -20,8 +21,8 @@ from datasets import Dataset
 time_dict = {}
 start_time = time.time()
 
-embeddings = OllamaEmbedding(model_name="phi3:latest")  # OpenAIEmbedding()
-
+# embeddings = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")  # OpenAIEmbedding()
+embeddings = OllamaEmbedding(model_name="phi3:latest")
 Settings.embed_model = embeddings
 end_time = time.time()
 time_dict['embedding_setup'] = end_time - start_time
