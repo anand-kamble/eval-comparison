@@ -38,7 +38,7 @@ time_dict = {}
 start_time = time.time()
 # %%
 # embeddings = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")  # OpenAIEmbedding()
-embeddings = OllamaEmbedding(model_name="llama3",base_url="http://class02:11434")
+embeddings = OllamaEmbedding(model_name="llama3.1",base_url="http://class02:11434")
 Settings.embed_model = embeddings
 end_time = time.time()
 time_dict['embedding_setup'] = end_time - start_time
@@ -61,7 +61,7 @@ print("Time taken for vector index building: ",
 # %%
 print("Building the query engine...")
 start_time = time.time()
-generator_llm = Ollama(model="phi3:latest", request_timeout=600.0,
+generator_llm = Ollama(model="llama3.1", request_timeout=600.0,
                        base_url="http://class02:11434",
                        additional_kwargs={"max_length": 512})
 query_engine = vector_index.as_query_engine(llm=generator_llm)
@@ -80,7 +80,7 @@ metrics = [
 ]
 # %%
 #   # OpenAI(model="gpt-4")
-critic_llm = OpenAI(model="gpt-4o-mini") #Ollama(model="llama3",base_url="http://class01:11434",request_timeout=600.0)
+critic_llm = Ollama(model="llama3.1",base_url="http://class01:11434",request_timeout=600.0)
 # using GPT 3.5, use GPT 4 / 4-turbo for better accuracy
 evaluator_llm = critic_llm  # OpenAI(model="gpt-3.5-turbo")
 # USING CRITIC LLM TO KEEP EVERYTHING LOCAL FOR NOW.
@@ -115,7 +115,7 @@ testset = {
 
 
 # Here we are using the reference answer as the ground truth.
-for item in llama_rag_dataset["examples"][:5]:
+for item in llama_rag_dataset["examples"]:
     testset["question"].append(item["query"])
     testset["ground_truth"].append(item["reference_answer"])
 
@@ -140,7 +140,8 @@ result = evaluate(
     metrics=metrics,
     dataset=testset,
     llm=evaluator_llm,
-    embeddings=OllamaEmbedding(model_name="llama3",base_url="http://class03:11434"),
+    embeddings=OllamaEmbedding(model_name="llama3.1",base_url="http://class03:11434"),
+    raise_exceptions=False
 )
 
 end_time = time.time()
@@ -148,11 +149,11 @@ end_time = time.time()
 time_dict['evaluation'] = end_time - start_time
 print("Time taken  for evaluation: ", time_dict['evaluation'])
 # %%
-result.to_pandas().to_csv("ragas_evaluation.csv")
+result.to_pandas().to_csv("ragas_evaluation_llama3.1_as_eval.csv")
 # %%
 
 # Save timing results to a text file
-with open("timing_results.txt", "w") as f:
+with open("timing_results_llama3.1_as_eval.txt", "w") as f:
     for key, value in time_dict.items():
         f.write(f"{key}: {value} seconds\n")
 
