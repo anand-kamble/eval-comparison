@@ -80,7 +80,7 @@ metrics = [
 ]
 # %%
 #   # OpenAI(model="gpt-4")
-critic_llm = Ollama(model="llama3.1",base_url="http://class01:11434",request_timeout=600.0)
+critic_llm = Ollama(model="llama3",base_url="http://class01:11434",request_timeout=600.0)
 # using GPT 3.5, use GPT 4 / 4-turbo for better accuracy
 evaluator_llm = critic_llm  # OpenAI(model="gpt-3.5-turbo")
 # USING CRITIC LLM TO KEEP EVERYTHING LOCAL FOR NOW.
@@ -105,7 +105,7 @@ evaluator_llm = critic_llm  # OpenAI(model="gpt-3.5-turbo")
 start_time = time.time()
 
 llama_rag_dataset = None
-with open("data/EvaluatingLlmSurveyPaperDataset/rag_dataset.json", "r") as f:
+with open("data/HistoryOfAlexnetDataset/rag_dataset.json", "r") as f:
     llama_rag_dataset = json.load(f)
 
 testset = {
@@ -115,7 +115,7 @@ testset = {
 
 
 # Here we are using the reference answer as the ground truth.
-for item in llama_rag_dataset["examples"]:
+for item in llama_rag_dataset["examples"][:25]:
     testset["question"].append(item["query"])
     testset["ground_truth"].append(item["reference_answer"])
 
@@ -149,11 +149,11 @@ end_time = time.time()
 time_dict['evaluation'] = end_time - start_time
 print("Time taken  for evaluation: ", time_dict['evaluation'])
 # %%
-result.to_pandas().to_csv("ragas_evaluation_llama3.1_as_eval.csv")
+result.to_pandas().to_csv("HistoryOfAlexnetDataset_query_llama3.1_eval_llama3.csv")
 # %%
 
 # Save timing results to a text file
-with open("timing_results_llama3.1_as_eval.txt", "w") as f:
+with open("HistoryOfAlexnetDataset_query_llama3.1_eval_llama3.txt", "w") as f:
     for key, value in time_dict.items():
         f.write(f"{key}: {value} seconds\n")
 
