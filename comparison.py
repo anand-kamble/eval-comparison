@@ -9,6 +9,10 @@ llama3 = pd.read_csv("ragas_evaluation_llama3_as_eval.csv")
 # Query Model: llama3.1
 # Evaluation Model: llama3.1
 llama3_1 = pd.read_csv("ragas_evaluation_llama3.1_as_eval.csv")
+
+#%%
+llama3_1["faithfulness"].value_counts()
+
 # %%
 metrics = ['faithfulness', 'answer_relevancy', 'context_precision',
        'context_recall', 'harmfulness']
