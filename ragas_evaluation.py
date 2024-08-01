@@ -23,8 +23,8 @@ from llama_index.core import SimpleDirectoryReader
 from datasets import Dataset
 # %%
 
-QUERY_MODEL = "llama3.1"
-EVALUATION_MODEL = "llama3.1"
+QUERY_MODEL = "llama3"
+EVALUATION_MODEL = "llama3"
 DATASET = "HistoryOfAlexnetDataset"
 
 # %%
@@ -40,7 +40,7 @@ print("Time taken for embedding setup: ", time_dict['embedding_setup'])
 # %%
 start_time = time.time()
 documents = SimpleDirectoryReader(
-    f"./data/{DATASET}", required_exts=[".pdf"], recursive=True).load_data()
+    f"./data/{DATASET}", required_exts=[".pdf",".txt"], recursive=True).load_data()
 end_time = time.time()
 time_dict['document_loading'] = end_time - start_time
 print("Time taken for document loading: ", time_dict['document_loading'])
@@ -94,7 +94,6 @@ evaluator_llm = critic_llm  # OpenAI(model="gpt-3.5-turbo")
 #         "K-means clustering is a partitional clustering approach that divides the data into non-overlapping subsets (clusters), while hierarchical clustering produces a set of nested clusters organized as a hierarchical tree. K-means requires specifying the number of clusters in advance, while hierarchical clustering does not. K-means typically has a global objective function, while hierarchical clustering algorithms have local objectives.",
 #     ]}
 # To make this testset from the llama Dataset, we can convert the dataset to a dictionary as follows:
-
 # %%
 start_time = time.time()
 
@@ -109,7 +108,7 @@ testset = {
 
 
 # Here we are using the reference answer as the ground truth.
-for item in llama_rag_dataset["examples"][:25]:
+for item in llama_rag_dataset["examples"]:
     testset["question"].append(item["query"])
     testset["ground_truth"].append(item["reference_answer"])
 
@@ -143,11 +142,11 @@ end_time = time.time()
 time_dict['evaluation'] = end_time - start_time
 print("Time taken  for evaluation: ", time_dict['evaluation'])
 # %%
-result.to_pandas().to_csv(f"{DATASET}_query_{QUERY_MODEL}_eval_{EVALUATION_MODEL}.csv")
+result.to_pandas().to_csv(f"results/{DATASET}_query_{QUERY_MODEL}_eval_{EVALUATION_MODEL}.csv")
 # %%
 
 # Save timing results to a text file
-with open(f"{DATASET}_query_{QUERY_MODEL}_eval_{EVALUATION_MODEL}.txt", "w") as f:
+with open(f"results/{DATASET}_query_{QUERY_MODEL}_eval_{EVALUATION_MODEL}.txt", "w") as f:
     for key, value in time_dict.items():
         f.write(f"{key}: {value} seconds\n")
 

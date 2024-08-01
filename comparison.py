@@ -1,14 +1,18 @@
 #%%
 import pandas as pd
 import matplotlib.pyplot as plt
+
+QUERY_MODEL = "llama3"
+EVALUATION_MODEL = "llama3.1"
+DATASET = "HistoryOfAlexnetDataset"
 # %%
 # Query Model: llama3
 # Evaluation Model: llama3
-llama3 = pd.read_csv("ragas_evaluation_llama3_as_eval.csv")
+llama3 = pd.read_csv(f"results/{DATASET}_query_llama3_eval_llama3.csv")
 # %%
 # Query Model: llama3.1
 # Evaluation Model: llama3.1
-llama3_1 = pd.read_csv("ragas_evaluation_llama3.1_as_eval.csv")
+llama3_1 = pd.read_csv(f"results/{DATASET}_query_llama3.1_eval_llama3.1.csv")
 
 #%%
 llama3_1["faithfulness"].value_counts()
@@ -31,14 +35,17 @@ print("llama3.1 Metrics:")
 print(llama3_1_metrics.mean())
 print('-'*50)
 
+
+
+
 #%%
 # Query Model: llama3
 # Evaluation Model: llama3.1
-llama3_llama3_1 = pd.read_csv("EvaluatingLlmSurveyPaperDataset_query_llama3_eval_llama3.1.csv")
+llama3_llama3_1 = pd.read_csv(f"results/{DATASET}_query_llama3_eval_llama3.1.csv")
 
 # Query Model: llama3.1
 # Evaluation Model: llama3
-llama3_1_llama3 = pd.read_csv("EvaluatingLlmSurveyPaperDataset_query_llama3.1_eval_llama3.csv")
+llama3_1_llama3 = pd.read_csv(f"results/{DATASET}_query_llama3.1_eval_llama3.csv")
 # %%
 llama3_metrics = llama3[metrics].mean()
 llama3_1_metrics = llama3_1[metrics].mean()
@@ -63,9 +70,11 @@ ax.set_ylabel('Mean Values')
 ax.legend(title='Model Evaluations', bbox_to_anchor=(1.05, 1), loc='upper left')
 ax.grid(True)
 
-plt.figtext(0.5, -0.05, 'Using Evaluating Llm Survey Paper Dataset', ha='center', fontsize=12)
+plt.figtext(0.5, -0.05, 'Using Evaluating History of Alexnet Dataset', ha='center', fontsize=12)
 
 plt.tight_layout()
 plt.show()
-plt.savefig('comparison_metrics.png')
+# plt.savefig('comparison_metrics.png')
 
+
+# %%

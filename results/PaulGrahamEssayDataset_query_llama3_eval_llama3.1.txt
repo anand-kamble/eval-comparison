@@ -1,0 +1,6 @@
+embedding_setup: 1.1526107788085938 seconds
+document_loading: 0.003862142562866211 seconds
+vector_index_building: 20.95370054244995 seconds
+query_engine_building: 0.001657247543334961 seconds
+testset_loading: 0.0056705474853515625 seconds
+evaluation: 880.5396010875702 seconds
