@@ -142,3 +142,33 @@ results/<DATASET>_query_<QUERY_MODEL>_eval_<EVALUATION_MODEL>.txt
 - Ensure the dataset directory is correctly structured and contains the required files.
 - Check that the base URLs for the Ollama models are accessible.
 - Adjust `request_timeout` and `max_length` as needed for your environment.
+
+# Results
+## Comparison of Evaluation Metrics
+### Evaluation on the History of Alexnet Dataset
+The following plot shows the comparison of evaluation metrics using the History of Alexnet Dataset:
+![history_of_alexnet](./history_of_alexnet.png)
+
+### Evaluation on the Paul Graham Essay Dataset
+The following plot shows the comparison of evaluation metrics using the Paul Graham Essay Dataset:
+![paul_graham](./paul_graham.png)
+
+
+### Evaluation on the Llm Survey Paper Dataset
+The following plot shows the comparison of evaluation metrics using the Lim Survey Paper Dataset:
+![Llm Survey Paper Dataset](./comparison_metrics.png)
+
+
+## Explanation of the Plots
+- **Faithfulness**: Measures how accurately the generated answers reflect the source content.
+- **Answer Relevancy**: Evaluates how relevant the answers are to the queries.
+- **Context Precision**: Assesses how precisely the context is captured in the answers.
+- **Context Recall**: Measures how comprehensively the context is represented.
+- **Harmfulness**: Evaluates the potential harmfulness of the content.
+
+### Each plot compares the metrics across different model combinations:
+
+- **Llama 3 (self-eval)**: Self-evaluation using Llama 3.
+- **Llama 3.1 (self-eval)**: Self-evaluation using Llama 3.1.
+- **Llama 3 (eval by Llama 3.1)**: Evaluation of Llama 3 by Llama 3.1.
+- **Llama 3.1 (eval by Llama 3)**: Evaluation of Llama 3.1 by Llama 3.
