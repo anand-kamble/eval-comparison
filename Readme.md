@@ -158,6 +158,9 @@ The following plot shows the comparison of evaluation metrics using the Paul Gra
 The following plot shows the comparison of evaluation metrics using the Lim Survey Paper Dataset:
 ![Llm Survey Paper Dataset](./comparison_metrics.png)
 
+### Evaluation of the Mini Truthful QA Dataset
+
+![Mini Truthful QA Dataset](./MiniTruthfulQADataset.png)
 
 ## Explanation of the Plots
 - **Faithfulness**: Measures how accurately the generated answers reflect the source content.

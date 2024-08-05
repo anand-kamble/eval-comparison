@@ -23,9 +23,9 @@ from llama_index.core import SimpleDirectoryReader
 from datasets import Dataset
 # %%
 
-QUERY_MODEL = "llama3"
-EVALUATION_MODEL = "llama3"
-DATASET = "HistoryOfAlexnetDataset"
+QUERY_MODEL = "llama3.1"
+EVALUATION_MODEL = "llama3.1"
+DATASET = "PatronusAIFinanceBenchDataset"
 
 # %%
 time_dict = {}

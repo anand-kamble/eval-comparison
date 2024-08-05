@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 QUERY_MODEL = "llama3"
 EVALUATION_MODEL = "llama3.1"
-DATASET = "HistoryOfAlexnetDataset"
+DATASET = "PatronusAIFinanceBenchDataset"
 # %%
 # Query Model: llama3
 # Evaluation Model: llama3
@@ -70,7 +70,7 @@ ax.set_ylabel('Mean Values')
 ax.legend(title='Model Evaluations', bbox_to_anchor=(1.05, 1), loc='upper left')
 ax.grid(True)
 
-plt.figtext(0.5, -0.05, 'Using Evaluating History of Alexnet Dataset', ha='center', fontsize=12)
+plt.figtext(0.5, -0.05, 'Using Mini Truthful QA Dataset', ha='center', fontsize=12)
 
 plt.tight_layout()
 plt.show()
