@@ -29,7 +29,7 @@ DATASET = "PatronusAIFinanceBenchDataset"
 
 # %%
 time_dict = {}
-start_time = time.time()
+start_time: float = time.time()
 # %%
 # embeddings = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")  # OpenAIEmbedding()
 embeddings = OllamaEmbedding(model_name=QUERY_MODEL,base_url="http://class02:11434")
