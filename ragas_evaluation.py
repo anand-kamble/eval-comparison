@@ -119,9 +119,9 @@ for item in llama_rag_dataset["examples"]:
     I found this by look at the source code, and the type given 
     """
 
-dataset = Dataset.from_dict(testset)
+dataset: Dataset = Dataset.from_dict(testset)
 
-end_time = time.time()
+end_time: float = time.time()
 time_dict['testset_loading'] = end_time - start_time
 print("Time taken for testset loading: ", time_dict['testset_loading'])
 # %%

@@ -1,85 +1,105 @@
+
 # %%
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
-from typing import List
-from llama_index.core import Settings
-from llama_index.core.base.base_query_engine import BaseQueryEngine
-from llama_index.core.base.response.schema import AsyncStreamingResponse, PydanticResponse, Response, StreamingResponse
-from llama_index.core.callbacks import CallbackManager
+import json
+import time
+from typing import Any, List
+from llama_index.core.base.base_retriever import BaseRetriever
+from opik import Dataset, Opik, track, DatasetItem
+from llama_index.core.base.llms.types import CompletionResponse
+from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
 from llama_index.core.schema import Document
+from llama_index.core.settings import Settings
+from llama_index.embeddings.ollama import OllamaEmbedding
+from opik.evaluation import evaluate
+from opik.evaluation.evaluation_result import EvaluationResult
+from opik.evaluation.metrics import Equals, Hallucination
+from opik.integrations.openai import track_openai
 from opik.integrations.llama_index import LlamaIndexCallbackHandler
 from llama_index.llms.ollama import Ollama
-from llama_index.embeddings.ollama import OllamaEmbedding
-import opik
-
+# Define the task to evaluate
 # %%
-"""
-Configure the Opik workspace and API key.
-
-- The `opik.configure()` function sets up the API key and workspace for authentication.
-- In this example, the API key and workspace are provided for a user identified as 'anand-kamble'.
-"""
-opik.configure(api_key="cSXOonbmGcHatvz5631dJGGk1", workspace="anand-kamble")
-
-# %%
-"""
-Set global constants for the query and evaluation models, and specify the dataset.
-
-- `QUERY_MODEL` and `EVALUATION_MODEL`: Define the Llama model versions to be used for querying and evaluation.
-- `DATASET`: Refers to the dataset that contains documents (in this case, "PaulGrahamEssayDataset").
-"""
 QUERY_MODEL = "llama3.1"
 EVALUATION_MODEL = "llama3.1"
 DATASET = "PaulGrahamEssayDataset"
 
 # %%
-"""
-Configure the callback handler and embedding model for the index.
-
-- `opik_callback_handler`: This handler is created to track and manage the query events during runtime.
-- `CallbackManager`: A global callback manager is initialized to handle callback operations using `opik_callback_handler`.
-- `embeddings`: Ollama-based embedding is created using the specified query model (`QUERY_MODEL`), and an API endpoint is set to interact with the Ollama server at `localhost:11434`.
-- These settings are applied to the `Settings` object globally to configure the embedding model and callback manager for the query engine.
-"""
-opik_callback_handler = LlamaIndexCallbackHandler()
-Settings.callback_manager = CallbackManager([opik_callback_handler])
 embeddings = OllamaEmbedding(
     model_name=QUERY_MODEL, base_url="http://localhost:11434")
 Settings.embed_model = embeddings
-
-
+llm = Ollama(model=QUERY_MODEL, request_timeout=600.0,
+             base_url="http://localhost:11434", additional_kwargs={"max_length": 512})
 # %%
-"""
-This section loads the dataset documents into the index.
 
-- It reads the documents from the specified directory using `SimpleDirectoryReader`.
-- The `VectorStoreIndex` is created from the loaded documents.
-"""
+
+@track
+def your_llm_application(input: str) -> str:
+    response: CompletionResponse = llm.complete(input)
+
+    return response.text
+# %%
+# Define the evaluation task
+
+
+def evaluation_task(x: DatasetItem) -> dict[str, Any]:
+    return {
+        "input": x.input['user_question'],
+        "output": your_llm_application(x.input['user_question']),
+        "context": your_context_retriever(x.input['user_question'])
+    }
+# %%
+
+
 documents: List[Document] = SimpleDirectoryReader(
-    f"../data/{DATASET}").load_data()
-index: VectorStoreIndex = VectorStoreIndex.from_documents(documents)
+    f"../data/{DATASET}").load_data()   
+index: VectorStoreIndex = VectorStoreIndex.from_documents(
+    documents, show_progress=True)
+retriever: BaseRetriever = index.as_retriever()
+
+
+@track
+def your_context_retriever(input: str) -> List:
+
+    return retriever.retrieve(input)
 
 
 # %%
-"""
-This section configures the query engine with the specified LLM (Ollama).
-- `generator_llm` is the instance of Ollama LLM, configured with `QUERY_MODEL`.
-- A query engine is created from the index with the specified LLM as the query engine's generator.
-"""
-generator_llm = Ollama(model=QUERY_MODEL, request_timeout=600.0,
-                       base_url="http://localhost:11434",
-                       additional_kwargs={"max_length": 512})
-query_engine: BaseQueryEngine = index.as_query_engine(llm=generator_llm)
+# Create a simple dataset
+client = Opik()
+dataset: Dataset | None = None
+try:
+    dataset = client.create_dataset(
+        name="my-paul-graham-essay-dataset")
+    llama_rag_dataset = None
+    with open(f"../data/{DATASET}/rag_dataset.json", "r") as f:
+        llama_rag_dataset = json.load(f)
+
+    items_to_insert = []
+    for item in llama_rag_dataset["examples"]:
+
+        items_to_insert.append(DatasetItem(
+            input={"user_question": item["query"]},
+            expected_output={"assistant_answer": item["reference_answer"]}
+        ))
+
+    dataset.insert(items_to_insert)
+except:
+    dataset = client.get_dataset(name="my-paul-graham-essay-dataset")
+# %%
+# Define the metrics
+hallucination_metric = Hallucination()
 
 # %%
-"""
-This section performs a query using the query engine.
-
-- The query "Who is Paul Graham?" is sent to the query engine.
-- The response is captured in one of the possible response types: `Response`, `StreamingResponse`, `AsyncStreamingResponse`, or `PydanticResponse`.
-- The response is printed.
-"""
-response: Response | StreamingResponse | AsyncStreamingResponse | PydanticResponse = query_engine.query(
-    "Who is Paul Graham?")
-print(response)
+start_time: float = time.time()
+evaluation: EvaluationResult = evaluate(
+    experiment_name="My 1st experiment",
+    dataset=dataset,
+    task=evaluation_task,
+    scoring_metrics=[hallucination_metric],
+    experiment_config={
+        "model": QUERY_MODEL
+    }
+)
+end_time: float = time.time()
+print("Time taken  for evaluation: ", end_time - start_time)
 
 # %%
