@@ -1,6 +1,7 @@
 
 # %%
 import json
+import os
 import time
 from typing import Any, List
 from llama_index.core.base.base_retriever import BaseRetriever
@@ -66,6 +67,7 @@ def evaluation_task(x: DatasetItem)  -> dict[str, str]:
 
 # %%
 # Create a simple dataset
+os.environ["OPIK_API_KEY"] = "cSXOonbmGcHatvz5631dJGGk1"
 client = Opik()
 dataset: Dataset | None = None
 try:
